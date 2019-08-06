@@ -308,6 +308,64 @@ describe("app", () => {
             });
         });
       });
+      describe.only("/articles/:article_id/comments - GET", () => {
+        it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
+          return request(app)
+            .get("/api/articles/4/not-a-route")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Page not found");
+            });
+        });
+        it("GET / status: 404 and respond with message: Comments not found, if a non-existent article is entered", () => {
+          return request(app)
+            .get("/api/articles/13/comments")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Comments not found");
+            });
+        });
+        it("GET / status: 200 and respond with array of all comments for article by article_id, sorted by created_at by default - checking if respond is an array of comments objects with correct keys", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.an("array");
+              expect(body.comments[0]).to.contain.keys(
+                "comment_id",
+                "body",
+                "article_id",
+                "author",
+                "votes",
+                "created_at"
+              );
+            });
+        });
+        it("GET / status: 200 and respond with array of all comments for article by article_id, sorted by created_at by default - checking if comments length is correct for article_id 1", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments.length).to.equal(13);
+            });
+        });
+        it("GET / status: 200 and respond with array of all comments for article by article_id, sorted by created_at by default - checking if comments are ordered descending by DEFAULT", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.descendingBy("created_at");
+            });
+        });
+        xit("GET *** / status: 200 and returns an empty array if an article containing no comments is entered", () => {
+          return request(app)
+            .get("/api/articles/2/comments")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.eql([]);
+            });
+        });
+      });
     });
   });
 });

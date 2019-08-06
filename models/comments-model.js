@@ -18,3 +18,18 @@ exports.postNewCommentByArticleId = (article_id, username, body) => {
       }
     });
 };
+
+exports.selectAllCommentsByArticleId = (article_id, sort_by, order) => {
+  return connection
+    .select("*")
+    .from("comments")
+    .where("article_id", article_id)
+    .orderBy(sort_by || "created_at", order || "desc")
+    .then(comments => {
+      if (!comments || !comments.length) {
+        return Promise.reject({ status: 404, message: "Comments not found" });
+      } else {
+        return comments;
+      }
+    });
+};
