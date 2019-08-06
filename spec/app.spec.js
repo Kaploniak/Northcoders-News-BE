@@ -253,6 +253,24 @@ describe("app", () => {
             expect(body.msg).to.equal("Bad request");
           });
       });
+      it("POST / status: 400 and respond with message: Bad request, when sending an empty object", () => {
+        return request(app)
+          .post("/api/articles/4/comments")
+          .send({})
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("POST / status: 400 and respond with message: Bad request, when sending an object just with username", () => {
+        return request(app)
+          .post("/api/articles/4/comments")
+          .send({ username: "lurker" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
       it("POST / status: 201 and respond with posted comment - checking if object got all the keys", () => {
         return request(app)
           .post("/api/articles/4/comments")
