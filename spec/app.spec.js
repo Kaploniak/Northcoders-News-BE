@@ -63,6 +63,22 @@ describe("app", () => {
             expect(body.msg).to.equal("User not found");
           });
       });
+      it("GET / status: 400 and respond with message: Bad request, when username_id is not a valid input", () => {
+        return request(app)
+          .get("/api/users/12345")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("GET / status: 400 and respond with message: Bad request, when number is passed instead of username", () => {
+        return request(app)
+          .get("/api/users/1")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
       it("GET / status: 200 and return an user object - checking for correct keys", () => {
         return request(app)
           .get("/api/users/butter_bridge")
@@ -80,16 +96,8 @@ describe("app", () => {
             expect(body.user.name).to.equal("jonny");
           });
       });
-      it("GET / status: 400 and respond with message: Bad request, when number is passed instead of username", () => {
-        return request(app)
-          .get("/api/users/1")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).to.equal("Bad request");
-          });
-      });
     });
-    describe("/articles/:article_id - GET/PATCH", () => {
+    describe("/articles/:article_id - GET/PATCH/POST", () => {
       it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
         return request(app)
           .get("/api/not-a-route/4")
@@ -131,6 +139,14 @@ describe("app", () => {
             );
           });
       });
+      it("GET / status: 200 and return an article object - checking for correct comment count value", () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.comment_count).to.equal("13");
+          });
+      });
       it("PATCH / status: 404 and respond with message: Page not found, when wrong path", () => {
         return request(app)
           .patch("/api/not-a-route/4")
@@ -158,6 +174,40 @@ describe("app", () => {
             expect(body.msg).to.equal("Bad request");
           });
       });
+      it("PATCH / status: 201 and return not changed article object, when sending an empty object", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({})
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.article).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 100,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z"
+            });
+          });
+      });
+      it("PATCH / status: 201 and return an updated article object (updated just by vote), when sending an object with some other property", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1, name: "Mitch" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.article).to.eql({
+              article_id: 1,
+              title: "Living in the shadow of a great man",
+              body: "I find this existence challenging",
+              votes: 101,
+              topic: "mitch",
+              author: "butter_bridge",
+              created_at: "2018-11-15T12:21:54.171Z"
+            });
+          });
+      });
       it("PATCH / status: 201 and return an updated article object (where by default votes value was 0)", () => {
         return request(app)
           .patch("/api/articles/3")
@@ -183,6 +233,49 @@ describe("app", () => {
           .expect(201)
           .then(({ body }) => {
             expect(body.article.votes).to.equal(-666);
+          });
+      });
+      it("POST / status: 404 and respond with message: Page not found, when wrong path", () => {
+        return request(app)
+          .post("/api/articles/4/not-a-route")
+          .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Page not found");
+          });
+      });
+      it("POST / status: 400 and respond with message: Article do not exist, when article_id do not match existing aticle in database", () => {
+        return request(app)
+          .post("/api/articles/13/comments")
+          .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("POST / status: 201 and respond with posted comment - checking if object got all the keys", () => {
+        return request(app)
+          .post("/api/articles/4/comments")
+          .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment).to.have.keys(
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body"
+            );
+          });
+      });
+      it("POST / status: 201 and respond with posted comment - checking if comment body match input", () => {
+        return request(app)
+          .post("/api/articles/4/comments")
+          .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment.body).to.equal("THIS IS TEST COMMENT");
           });
       });
     });

@@ -9,7 +9,7 @@ app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
   // console.log(err, "<----- inside app");
-  if (err.code === "22P02" || err.status === 400) {
+  if (err.code === "22P02" || err.code === "23503" || err.status === 400) {
     res.status(400).send({ msg: "Bad request" });
   } else if (err.status) {
     res.status(err.status).send({ msg: err.message });

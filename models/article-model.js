@@ -9,7 +9,7 @@ exports.selectArticleByArticleId = article_id => {
     .from("articles")
     .where("articles.article_id", article_id)
     .then(article => {
-      if (article.length === 0) {
+      if (!article || !article.length) {
         return Promise.reject({ status: 404, message: "Article do not exist" });
       } else {
         return article;
@@ -19,12 +19,12 @@ exports.selectArticleByArticleId = article_id => {
 
 exports.updateArticleVotesByArticleId = (article_id, inc_votes) => {
   return connection
-    .increment("votes", inc_votes)
+    .increment("votes", inc_votes || 0)
     .into("articles")
     .where("article_id", "=", article_id)
     .returning("*")
     .then(article => {
-      if (!article || article.length === 0) {
+      if (!article || !article.length) {
         return Promise.reject({ status: 404, message: "Article do not exist" });
       } else {
         return article;
