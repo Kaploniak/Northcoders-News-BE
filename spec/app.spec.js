@@ -495,12 +495,55 @@ describe("app", () => {
               expect(body.articles).to.be.descendingBy("created_at");
             });
         });
-        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT when errneous sort_by and order quaries passed", () => {
+        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT, filter the articles by the topic value specified in the query", () => {
           return request(app)
-            .get("/api/articles?order=asc&sort_by=author&topic=coding")
+            .get("/api/articles?topic=mitch")
             .expect(200)
             .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(11);
               expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT, filter the articles by the author value specified in the query", () => {
+          return request(app)
+            .get("/api/articles?author=rogersop")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(3);
+              expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT, filter the articles by the author value and topic value specified in the query", () => {
+          return request(app)
+            .get("/api/articles?author=rogersop&topic=cats")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(1);
+              expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and respond with empty array, when filter the articles by the valid author value and topic value that do not have any articles", () => {
+          return request(app)
+            .get("/api/articles?author=icellusedkars&topic=cats")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.have.lengthOf(0);
+            });
+        });
+        it("GET / status: 404 and respond with message: Topic not found, if the query do not match any topic", () => {
+          return request(app)
+            .get("/api/articles?topic=not-a-topic")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Topic not found");
+            });
+        });
+        it("GET / status: 404 and respond with message: Author not found, if the query do not match any author", () => {
+          return request(app)
+            .get("/api/articles?author=not-an-author")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Author not found");
             });
         });
       });

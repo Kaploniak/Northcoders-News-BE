@@ -32,7 +32,12 @@ exports.updateArticleVotesByArticleId = (article_id, inc_votes) => {
     });
 };
 
-exports.selectAllArticles = (sort_by = "created_at", order = "desc", topic) => {
+exports.selectAllArticles = (
+  sort_by = "created_at",
+  order = "desc",
+  author,
+  topic
+) => {
   const permittedOrder = ["asc", "desc"];
   const permittedColunms = [
     "article_id",
@@ -65,11 +70,22 @@ exports.selectAllArticles = (sort_by = "created_at", order = "desc", topic) => {
     .count("comments.article_id AS comment_count")
     .orderBy(sort_by, order)
     .modify(queryBuilder => {
-      if (topic) queryBuilder.where("articles.topic", "=", topic);
+      if (author && topic) {
+        queryBuilder
+          .where({ "articles.author": author })
+          .andWhere({ "articles.topic": topic });
+      } else if (author) {
+        queryBuilder.where("articles.author", author);
+      } else if (topic) {
+        queryBuilder.where("articles.topic", topic);
+      }
     })
     .then(articles => {
-      if (!articles || articles.length === 0) {
-        return Promise.reject({ status: 404, message: "Articles not found" });
+      if (!articles) {
+        return Promise.reject({
+          status: 404,
+          message: "Articles not found"
+        });
       } else {
         return articles;
       }
