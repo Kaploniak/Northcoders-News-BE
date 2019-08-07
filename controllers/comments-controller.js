@@ -1,6 +1,7 @@
 const {
   postNewCommentByArticleId,
-  selectAllCommentsByArticleId
+  selectAllCommentsByArticleId,
+  updateCommentByCommentId
 } = require("../models/comments-model");
 const { selectArticleByArticleId } = require("../models/article-model");
 
@@ -36,6 +37,16 @@ exports.sendAllCommentsByArticleId = (req, res, next) => {
         res.status(200).send({ comments });
       }
       return comments;
+    })
+    .catch(err => next(err));
+};
+
+exports.patchCommentVotesByCommentId = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  updateCommentByCommentId(comment_id, inc_votes)
+    .then(comment => {
+      res.status(200).send({ comment: comment[0] });
     })
     .catch(err => next(err));
 };

@@ -420,7 +420,7 @@ describe("app", () => {
         });
       });
     });
-    describe.only("/api/articles", () => {
+    describe("/api/articles", () => {
       describe("/api/articles - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -544,6 +544,98 @@ describe("app", () => {
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).to.equal("Author not found");
+            });
+        });
+      });
+    });
+    describe.only("/api/comments/:comment_id", () => {
+      describe("/api/comments/:comment_id - PATCH", () => {
+        it("PATCH / status: 404 and respond with message: Page not found, when wrong path", () => {
+          return request(app)
+            .patch("/api/not-a-route/4")
+            .send({ inc_votes: 333 })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Page not found");
+            });
+        });
+        it("PATCH / status: 404 and respond with message: Comment do not exist, when comment_id do not match existing comment in database", () => {
+          return request(app)
+            .patch("/api/comments/100")
+            .send({ inc_votes: 333 })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Comment do not exist");
+            });
+        });
+        it("PATCH / status: 400 and respond with message: Bad request, when sending inc_votes and value is not a number", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: "abc" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad request");
+            });
+        });
+        it("PATCH / status: 400 and respond with message: Bad request, when sending inc_votes and value is not a number", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: "abc" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Bad request");
+            });
+        });
+        it("PATCH / status: 200 and return not changed comment object, when sending an empty object", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({})
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).to.eql({
+                comment_id: 1,
+                author: "butter_bridge",
+                article_id: 9,
+                votes: 16,
+                created_at: "2017-11-22T12:36:03.389Z",
+                body:
+                  "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+              });
+            });
+        });
+        it("PATCH / status: 200 and return an updated comment object (updated just by vote), when sending an object with some other property", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 100, author: "Mitch" })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).to.eql({
+                comment_id: 1,
+                author: "butter_bridge",
+                article_id: 9,
+                votes: 116,
+                created_at: "2017-11-22T12:36:03.389Z",
+                body:
+                  "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+              });
+            });
+        });
+        it("PATCH / status: 200 and return an updated comment object (where votes value was 16", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 14 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment.votes).to.equal(30);
+            });
+        });
+        it("PATCH / status: 200 and return an updated article object (where inc_votes has negative value)", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -26 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment.votes).to.equal(-10);
             });
         });
       });

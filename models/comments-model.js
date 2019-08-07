@@ -53,3 +53,18 @@ exports.selectAllCommentsByArticleId = (
       }
     });
 };
+
+exports.updateCommentByCommentId = (comment_id, inc_votes) => {
+  return connection
+    .increment("votes", inc_votes || 0)
+    .into("comments")
+    .where("comment_id", "=", comment_id)
+    .returning("*")
+    .then(comment => {
+      if (!comment || !comment.length) {
+        return Promise.reject({ status: 404, message: "Comment do not exist" });
+      } else {
+        return comment;
+      }
+    });
+};
