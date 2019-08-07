@@ -548,7 +548,7 @@ describe("app", () => {
         });
       });
     });
-    describe.only("/api/comments/:comment_id", () => {
+    describe("/api/comments/:comment_id", () => {
       describe("/api/comments/:comment_id - PATCH", () => {
         it("PATCH / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -637,6 +637,21 @@ describe("app", () => {
             .then(({ body }) => {
               expect(body.comment.votes).to.equal(-10);
             });
+        });
+      });
+      describe("/api/comments/:comment_id - DELETE", () => {
+        it("DELETE / status 404 and respond with an error message: Comment with Id 50 not found, if a comment_id does not exist", () => {
+          return request(app)
+            .delete("/api/comments/50")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Comment with Id 50 not found");
+            });
+        });
+        it("DELETE / status: 204 and remove the comment by comment_id", () => {
+          return request(app)
+            .delete("/api/comments/1")
+            .expect(204);
         });
       });
     });

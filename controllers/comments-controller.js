@@ -1,7 +1,8 @@
 const {
   postNewCommentByArticleId,
   selectAllCommentsByArticleId,
-  updateCommentByCommentId
+  updateCommentByCommentId,
+  removedComment
 } = require("../models/comments-model");
 const { selectArticleByArticleId } = require("../models/article-model");
 
@@ -47,6 +48,15 @@ exports.patchCommentVotesByCommentId = (req, res, next) => {
   updateCommentByCommentId(comment_id, inc_votes)
     .then(comment => {
       res.status(200).send({ comment: comment[0] });
+    })
+    .catch(err => next(err));
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removedComment(comment_id)
+    .then(comment => {
+      res.status(204).send({ msg: "Comment removed" });
     })
     .catch(err => next(err));
 };

@@ -68,3 +68,21 @@ exports.updateCommentByCommentId = (comment_id, inc_votes) => {
       }
     });
 };
+
+exports.removedComment = comment_id => {
+  return connection
+    .select("*")
+    .from("comments")
+    .where("comments.comment_id", "=", comment_id)
+    .del()
+    .then(deleted => {
+      if (!deleted) {
+        return Promise.reject({
+          status: 404,
+          message: `Comment with Id ${comment_id} not found`
+        });
+      } else {
+        return "Deleted";
+      }
+    });
+};
