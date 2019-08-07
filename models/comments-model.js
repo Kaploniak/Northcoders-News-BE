@@ -24,6 +24,22 @@ exports.selectAllCommentsByArticleId = (
   sort_by = "created_at",
   order = "desc"
 ) => {
+  const permittedColunms = [
+    "comment_id",
+    "author",
+    "article_id",
+    "votes",
+    "created_at",
+    "body"
+  ];
+  const permittedOrder = ["asc", "desc"];
+
+  if (!permittedColunms.includes(sort_by)) {
+    sort_by = "created_at";
+  }
+  if (!permittedOrder.includes(order)) {
+    order = "desc";
+  }
   return connection
     .select("*")
     .from("comments")

@@ -400,6 +400,24 @@ describe("app", () => {
               expect(body.comments).to.be.descendingBy("author");
             });
         });
+        it("GET / status: 200 and respond with array of comments for specified article, sorting comments by the specified column and in the specified order when provided with a valid query", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.ascendingBy("votes");
+            });
+        });
+        it("GET / status: 200 and respond with array of comments sorted BY DEFAULT when errneous sort_by and order quaries passed", () => {
+          return request(app)
+            .get(
+              "/api/articles/1/comments?sort_by=not-a-collumnt&order=not-an-order"
+            )
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.descendingBy("created_at");
+            });
+        });
       });
     });
   });
