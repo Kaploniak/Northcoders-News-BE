@@ -2,6 +2,7 @@ const {
   postNewCommentByArticleId,
   selectAllCommentsByArticleId
 } = require("../models/comments-model");
+const { selectArticleByArticleId } = require("../models/article-model");
 
 exports.addNewComment = (req, res, next) => {
   const { article_id } = req.params;
@@ -16,9 +17,25 @@ exports.addNewComment = (req, res, next) => {
 exports.sendAllCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by, order } = req.query;
-  selectAllCommentsByArticleId(article_id, sort_by, order)
-    .then(comments => {
-      res.status(200).send({ comments });
+
+  if (!/\d+/gm.test(article_id)) {
+    return next({
+      status: 400,
+      message: "Bad request: Given article_id is not an integer."
+    });
+  }
+
+  const article = selectArticleByArticleId(article_id);
+  const comments = selectAllCommentsByArticleId(article_id, sort_by, order);
+
+  Promise.all([article, comments])
+    .then(([article, comments]) => {
+      if (article[0].comment_count === "0") {
+        res.status(200).send({ comments: [] });
+      } else {
+        res.status(200).send({ comments });
+      }
+      return comments;
     })
     .catch(err => next(err));
 };

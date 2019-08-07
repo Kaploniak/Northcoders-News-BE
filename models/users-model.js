@@ -14,6 +14,6 @@ exports.selectUserByUsername = username => {
         }
       });
   } else {
-    return Promise.reject({ status: 400, msg: "Bad request" });
+    return Promise.reject({ status: 400, message: "Bad request" });
   }
 };

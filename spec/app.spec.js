@@ -181,11 +181,11 @@ describe("app", () => {
               expect(body.msg).to.equal("Bad request");
             });
         });
-        it("PATCH / status: 201 and return not changed article object, when sending an empty object", () => {
+        it("PATCH / status: 200 and return not changed article object, when sending an empty object", () => {
           return request(app)
             .patch("/api/articles/1")
             .send({})
-            .expect(201)
+            .expect(200)
             .then(({ body }) => {
               expect(body.article).to.eql({
                 article_id: 1,
@@ -198,11 +198,11 @@ describe("app", () => {
               });
             });
         });
-        it("PATCH / status: 201 and return an updated article object (updated just by vote), when sending an object with some other property", () => {
+        it("PATCH / status: 200 and return an updated article object (updated just by vote), when sending an object with some other property", () => {
           return request(app)
             .patch("/api/articles/1")
             .send({ inc_votes: 1, name: "Mitch" })
-            .expect(201)
+            .expect(200)
             .then(({ body }) => {
               expect(body.article).to.eql({
                 article_id: 1,
@@ -215,29 +215,29 @@ describe("app", () => {
               });
             });
         });
-        it("PATCH / status: 201 and return an updated article object (where by default votes value was 0)", () => {
+        it("PATCH / status: 200 and return an updated article object (where by default votes value was 0)", () => {
           return request(app)
             .patch("/api/articles/3")
             .send({ inc_votes: 666 })
-            .expect(201)
+            .expect(200)
             .then(({ body }) => {
               expect(body.article.votes).to.equal(666);
             });
         });
-        it("PATCH / status: 201 and return an updated article object (where votes value was 100", () => {
+        it("PATCH / status: 200 and return an updated article object (where votes value was 100", () => {
           return request(app)
             .patch("/api/articles/1")
             .send({ inc_votes: 666 })
-            .expect(201)
+            .expect(200)
             .then(({ body }) => {
               expect(body.article.votes).to.equal(766);
             });
         });
-        it("PATCH / status: 201 and return an updated article object (where inc_votes has negative value)", () => {
+        it("PATCH / status: 200 and return an updated article object (where inc_votes has negative value)", () => {
           return request(app)
             .patch("/api/articles/3")
             .send({ inc_votes: -666 })
-            .expect(201)
+            .expect(200)
             .then(({ body }) => {
               expect(body.article.votes).to.equal(-666);
             });
@@ -307,6 +307,15 @@ describe("app", () => {
               expect(body.comment.body).to.equal("THIS IS TEST COMMENT");
             });
         });
+        it("POST / status: 201 and respond with posted comment - checking if username match input", () => {
+          return request(app)
+            .post("/api/articles/4/comments")
+            .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.comment.author).to.equal("lurker");
+            });
+        });
       });
       describe.only("/articles/:article_id/comments - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
@@ -317,12 +326,22 @@ describe("app", () => {
               expect(body.msg).to.equal("Page not found");
             });
         });
+        it("GET / status: 400 and respond with message: Bad request - Given article id is not an integer, if an invalid article is entered", () => {
+          return request(app)
+            .get("/api/articles/invalid/comments")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.equal(
+                "Bad request: Given article_id is not an integer."
+              );
+            });
+        });
         it("GET / status: 404 and respond with message: Comments not found, if a non-existent article is entered", () => {
           return request(app)
             .get("/api/articles/13/comments")
             .expect(404)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Comments not found");
+              expect(body.msg).to.equal("Article do not exist");
             });
         });
         it("GET / status: 200 and respond with array of all comments for article by article_id, sorted by created_at by default - checking if respond is an array of comments objects with correct keys", () => {
@@ -357,12 +376,28 @@ describe("app", () => {
               expect(body.comments).to.be.descendingBy("created_at");
             });
         });
-        xit("GET *** / status: 200 and returns an empty array if an article containing no comments is entered", () => {
+        it("GET / status: 200 and respond with array of all comments for article by article_id, sorted by created_at by ascending order", () => {
+          return request(app)
+            .get("/api/articles/1/comments?order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.ascendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and returns an empty array if an article containing no comments is entered", () => {
           return request(app)
             .get("/api/articles/2/comments")
             .expect(200)
             .then(({ body }) => {
               expect(body.comments).to.eql([]);
+            });
+        });
+        it("GET / status: 200 and respond with all comments for given article_id, sorting comments by author when provided with a valid query", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=author")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.descendingBy("author");
             });
         });
       });
