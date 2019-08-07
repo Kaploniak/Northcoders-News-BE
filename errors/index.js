@@ -1,5 +1,5 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  // console.log(err, "<----- from error handler");
+  console.log(err, "<----- from error handler");
   if (err.code === "22P02" || err.code === "23503" || err.code === "23502") {
     res.status(400).send({ msg: "Bad request" });
   } else {

@@ -317,7 +317,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/articles/:article_id/comments - GET", () => {
+      describe("/articles/:article_id/comments - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
             .get("/api/articles/4/not-a-route")
@@ -416,6 +416,91 @@ describe("app", () => {
             .expect(200)
             .then(({ body }) => {
               expect(body.comments).to.be.descendingBy("created_at");
+            });
+        });
+      });
+    });
+    describe.only("/api/articles", () => {
+      describe("/api/articles - GET", () => {
+        it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
+          return request(app)
+            .get("/api/not-a-route")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Page not found");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.an("array");
+              expect(body.articles[0]).to.be.an("object");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects / checking if article object got correct keys", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles[0]).to.have.keys(
+                "article_id",
+                "title",
+                "votes",
+                "author",
+                "topic",
+                "created_at",
+                "comment_count"
+              );
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects sorted by DEFAULT descending and ordered by created_at", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects sorted by DEFAULT descending and ordered by topic", () => {
+          return request(app)
+            .get("/api/articles?sort_by=topic")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("topic");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects sorted by ascending order  and ordered by DEFAULT column", () => {
+          return request(app)
+            .get("/api/articles?order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.ascendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects sorted by ascending order and ordered by author", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=author")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.ascendingBy("author");
+            });
+        });
+        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT when errneous sort_by and order quaries passed", () => {
+          return request(app)
+            .get("/api/articles?sort_by=not-a-collumnt&order=not-an-order")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
+            });
+        });
+        it("GET / status: 200 and respond with array of articles sorted BY DEFAULT when errneous sort_by and order quaries passed", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=author&topic=coding")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
             });
         });
       });

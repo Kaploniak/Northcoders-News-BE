@@ -1,6 +1,7 @@
 const {
   selectArticleByArticleId,
-  updateArticleVotesByArticleId
+  updateArticleVotesByArticleId,
+  selectAllArticles
 } = require("../models/article-model");
 
 exports.sendArticleById = (req, res, next) => {
@@ -18,6 +19,15 @@ exports.patchArticleVotesByArticleId = (req, res, next) => {
   updateArticleVotesByArticleId(article_id, inc_votes)
     .then(article => {
       res.status(200).send({ article: article[0] });
+    })
+    .catch(err => next(err));
+};
+
+exports.sendAllArticles = (req, res, next) => {
+  const { sort_by, order, topic } = req.query;
+  selectAllArticles(sort_by, order, topic)
+    .then(articles => {
+      res.status(200).send({ articles });
     })
     .catch(err => next(err));
 };
