@@ -24,7 +24,7 @@ exports.updateArticleVotesByArticleId = (article_id, inc_votes) => {
     .where("article_id", "=", article_id)
     .returning("*")
     .then(article => {
-      if (!article || !article.length) {
+      if (!article.length) {
         return Promise.reject({ status: 404, message: "Article do not exist" });
       } else {
         return article;
@@ -70,6 +70,7 @@ exports.selectAllArticles = (
     .count("comments.article_id AS comment_count")
     .orderBy(sort_by, order)
     .modify(queryBuilder => {
+      // to do *********************************
       if (author && topic) {
         queryBuilder
           .where({ "articles.author": author })
