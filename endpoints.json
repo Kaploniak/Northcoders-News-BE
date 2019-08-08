@@ -23,5 +23,95 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an user object of a given username_id",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "butter_bridge",
+        "avatar_url": "https: //www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        "name": "jonny"
+      }
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object of a given article_id",
+    "queries": [],
+    "exampleResponse": {
+      "articles": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "body": "I find this existence challenging",
+        "votes": 100,
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "created_at": "2018-11-15T12: 21: 54.171Z",
+        "comment_count": "13"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id:": {
+    "description": "updates an article object's votes of a given article_id",
+    "queries": [],
+    "exampleInput": { "inc_votes": 1 },
+    "exampleResponse": {
+      "articles": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "body": "I find this existence challenging",
+        "votes": 101,
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "created_at": "2018-11-15T12: 21: 54.171Z",
+        "comment_count": "13"
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves an array of comments objects for the given article_id",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 2,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "votes": 14,
+          "created_at": "2016-11-22T12: 36: 03.389Z",
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+        },
+        {
+          "comment_id": 4,
+          "author": "icellusedkars",
+          "article_id": 1,
+          "votes": -100,
+          "created_at": "2014-11-23T12: 36: 03.389Z",
+          "body": "I carry a log — yes. Is it funny to you? It is not to me."
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates an comment object's votes of a given comment_id",
+    "queries": [],
+    "exampleInput": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "votes": 16,
+        "created_at": "2017-11-22T12:36:03.389Z",
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "delete the given comment by comment_id",
+    "queries": [],
+    "exampleResponse": "Comment removed"
   }
 }
