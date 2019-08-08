@@ -26,18 +26,15 @@ exports.patchArticleVotesByArticleId = (req, res, next) => {
 
 exports.sendAllArticles = (req, res, next) => {
   const { sort_by, order, author, topic } = req.query;
+  const articles = selectAllArticles(sort_by, order, author, topic);
+  const checkIfAuthorExists = author
+    ? checkIfExists(author, "users", "username")
+    : null;
+  const checkIfTopicExists = topic
+    ? checkIfExists(topic, "topics", "slug")
+    : null;
 
-  selectAllArticles(sort_by, order, author, topic)
-    .then(articles => {
-      const checkIfAuthorExists = author
-        ? checkIfExists(author, "users", "username")
-        : null;
-      const checkIfTopicExists = topic
-        ? checkIfExists(topic, "topics", "slug")
-        : null;
-
-      return Promise.all([checkIfAuthorExists, checkIfTopicExists, articles]);
-    })
+  Promise.all([checkIfAuthorExists, checkIfTopicExists, articles])
     .then(([checkIfAuthorExists, checkIfTopicExists, articles]) => {
       if (checkIfAuthorExists === false) {
         return Promise.reject({ status: 404, message: "Author not found" });
