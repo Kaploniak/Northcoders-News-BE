@@ -70,16 +70,8 @@ exports.selectAllArticles = (
     .count("comments.article_id AS comment_count")
     .orderBy(sort_by, order)
     .modify(queryBuilder => {
-      // to do *********************************
-      if (author && topic) {
-        queryBuilder
-          .where({ "articles.author": author })
-          .andWhere({ "articles.topic": topic });
-      } else if (author) {
-        queryBuilder.where("articles.author", author);
-      } else if (topic) {
-        queryBuilder.where("articles.topic", topic);
-      }
+      if (author) queryBuilder.where("articles.author", author);
+      if (topic) queryBuilder.where("articles.topic", topic);
     })
     .then(articles => {
       if (!articles) {
