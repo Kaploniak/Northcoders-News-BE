@@ -8,17 +8,23 @@ const {
   addNewComment,
   sendAllCommentsByArticleId
 } = require("../controllers/comments-controller");
+const { methodNotAllowed } = require("../errors");
 
 articlesRouter
   .route("/:article_id")
   .get(sendArticleById)
-  .patch(patchArticleVotesByArticleId);
+  .patch(patchArticleVotesByArticleId)
+  .all(methodNotAllowed);
 
 articlesRouter
   .route("/:article_id/comments")
   .post(addNewComment)
-  .get(sendAllCommentsByArticleId);
+  .get(sendAllCommentsByArticleId)
+  .all(methodNotAllowed);
 
-articlesRouter.route("/").get(sendAllArticles);
+articlesRouter
+  .route("/")
+  .get(sendAllArticles)
+  .all(methodNotAllowed);
 
 module.exports = articlesRouter;
