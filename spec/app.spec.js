@@ -19,6 +19,14 @@ describe("app", () => {
       });
   });
   describe("/api", () => {
+    it("GET / status: 200 and respond with a JSON representation of all the available endpoints of the api", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.an("object");
+        });
+    });
     describe("/topics", () => {
       describe("/topics - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
@@ -255,13 +263,13 @@ describe("app", () => {
               expect(body.msg).to.equal("Page not found");
             });
         });
-        it("POST / status: 400 and respond with message: Article do not exist, when article_id do not match existing aticle in database", () => {
+        it("POST / status: 404 and respond with message: Article do not exist, when article_id do not match existing aticle in database", () => {
           return request(app)
             .post("/api/articles/13/comments")
             .send({ username: "lurker", body: "THIS IS TEST COMMENT" })
-            .expect(400)
+            .expect(404)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("Page not found");
             });
         });
         it("POST / status: 400 and respond with message: Bad request, when sending an empty object", () => {
@@ -420,7 +428,7 @@ describe("app", () => {
         });
       });
     });
-    describe("/api/articles", () => {
+    describe.only("/api/articles", () => {
       describe("/api/articles - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
