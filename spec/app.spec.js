@@ -28,6 +28,21 @@ describe("app", () => {
         });
     });
     describe("/topics", () => {
+      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+        return request(app)
+          .delete("/api/topics")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - PATCH", () => {
+        return request(app)
+          .patch("/api/topics")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+        return request(app)
+          .post("/api/topics")
+          .expect(405);
+      });
       describe("/topics - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -57,6 +72,21 @@ describe("app", () => {
       });
     });
     describe("/users/:username", () => {
+      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+        return request(app)
+          .delete("/api/users/butter_bridge")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - PATCH", () => {
+        return request(app)
+          .patch("/api/users/butter_bridge")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+        return request(app)
+          .post("/api/users/butter_bridge")
+          .expect(405);
+      });
       describe("/users/:username - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -110,6 +140,16 @@ describe("app", () => {
       });
     });
     describe("/articles/:article_id", () => {
+      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+        return request(app)
+          .delete("/api/articles/1")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+        return request(app)
+          .post("/api/articles/1")
+          .expect(405);
+      });
       describe("/articles/:article_id - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -132,7 +172,7 @@ describe("app", () => {
             .get("/api/articles/not-an-article-id")
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("Invalid id");
             });
         });
         it("GET / status: 200 and return an article object - checking for correct keys", () => {
@@ -186,7 +226,7 @@ describe("app", () => {
             .send({ inc_votes: "abc" })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("Invalid id");
             });
         });
         it("PATCH / status: 200 and return not changed article object, when sending an empty object", () => {
@@ -253,6 +293,16 @@ describe("app", () => {
       });
     });
     describe("/articles/:article_id/comments", () => {
+      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+        return request(app)
+          .delete("/api/articles/1/comments")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - PATCH", () => {
+        return request(app)
+          .patch("/api/articles/1/comments")
+          .expect(405);
+      });
       describe("/articles/:article_id/comments - POST", () => {
         it("POST / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -278,7 +328,7 @@ describe("app", () => {
             .send({})
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("No data to post!");
             });
         });
         it("POST / status: 400 and respond with message: Bad request, when sending an object just with username", () => {
@@ -287,7 +337,7 @@ describe("app", () => {
             .send({ username: "lurker" })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("No data to post!");
             });
         });
         it("POST / status: 201 and respond with posted comment - checking if object got all the keys", () => {
@@ -428,7 +478,22 @@ describe("app", () => {
         });
       });
     });
-    describe.only("/api/articles", () => {
+    describe("/api/articles", () => {
+      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+        return request(app)
+          .delete("/api/articles")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - PATCH", () => {
+        return request(app)
+          .patch("/api/articles")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+        return request(app)
+          .post("/api/articles")
+          .expect(405);
+      });
       describe("/api/articles - GET", () => {
         it("GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -557,6 +622,16 @@ describe("app", () => {
       });
     });
     describe("/api/comments/:comment_id", () => {
+      it("Server responds with status 405 for invalid HTTP methods - GET", () => {
+        return request(app)
+          .get("/api/comments/1")
+          .expect(405);
+      });
+      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+        return request(app)
+          .post("/api/comments/1")
+          .expect(405);
+      });
       describe("/api/comments/:comment_id - PATCH", () => {
         it("PATCH / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -582,7 +657,7 @@ describe("app", () => {
             .send({ inc_votes: "abc" })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("Invalid id");
             });
         });
         it("PATCH / status: 400 and respond with message: Bad request, when sending inc_votes and value is not a number", () => {
@@ -591,7 +666,7 @@ describe("app", () => {
             .send({ inc_votes: "abc" })
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.equal("Bad request");
+              expect(body.msg).to.equal("Invalid id");
             });
         });
         it("PATCH / status: 200 and return not changed comment object, when sending an empty object", () => {
