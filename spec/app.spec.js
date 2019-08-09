@@ -155,11 +155,6 @@ describe("app", () => {
       });
     });
     describe("/articles/:article_id", () => {
-      it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
-        return request(app)
-          .delete("/api/articles/1")
-          .expect(405);
-      });
       it("Server responds with status 405 for invalid HTTP methods - POST", () => {
         return request(app)
           .post("/api/articles/1")
@@ -304,6 +299,21 @@ describe("app", () => {
             .then(({ body }) => {
               expect(body.article.votes).to.equal(-666);
             });
+        });
+      });
+      describe("/articles/:article_id - DELETE", () => {
+        it("1 DELETE / status 404 and respond with an error message: Article with Id 50 not found, if a article_id does not exist", () => {
+          return request(app)
+            .delete("/api/articles/50")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Article with Id 50 not found");
+            });
+        });
+        it("2 DELETE / status: 204 and remove the article by article_id", () => {
+          return request(app)
+            .delete("/api/articles/1")
+            .expect(204);
         });
       });
     });
@@ -697,7 +707,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/api/articles - POST", () => {
+      describe("/api/articles - POST", () => {
         it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
           return request(app)
             .post("/api/articles")
@@ -730,7 +740,7 @@ describe("app", () => {
               expect(body.msg).to.eql("Bad request");
             });
         });
-        it.only("POST / status: 400 and message: Bad request, when non existing username passed", () => {
+        it("POST / status: 400 and message: Bad request, when non existing username passed", () => {
           return request(app)
             .post("/api/articles")
             .send({
