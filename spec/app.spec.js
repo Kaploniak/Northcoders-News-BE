@@ -697,6 +697,80 @@ describe("app", () => {
             });
         });
       });
+      describe.only("/api/articles - POST", () => {
+        it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              title3: "Test title",
+              topic: "mitch",
+              author: "icellusedkars",
+              body: "Testing....",
+              created_at: new Date(1037708514171),
+              votes: 5
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it("POST / status: 400 and message: Bad request, when non existing topic passed", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              title3: "Test title",
+              topic: "michal",
+              author: "icellusedkars",
+              body: "Testing....",
+              created_at: new Date(1037708514171),
+              votes: 5
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it.only("POST / status: 400 and message: Bad request, when non existing username passed", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              title3: "Test title",
+              topic: "mitch",
+              author: "michal",
+              body: "Testing....",
+              created_at: new Date(1037708514171),
+              votes: 5
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it("POST / status: 201 add new article to existing topic with existing username respond with added article", () => {
+          return request(app)
+            .post("/api/articles")
+            .send({
+              title: "Test title",
+              topic: "mitch",
+              author: "icellusedkars",
+              body: "Testing....",
+              created_at: new Date(1037708514171),
+              votes: 5
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.article).to.eql({
+                article_id: 13,
+                title: "Test title",
+                body: "Testing....",
+                votes: 5,
+                topic: "mitch",
+                author: "icellusedkars",
+                created_at: "2002-11-19T12:21:54.171Z"
+              });
+            });
+        });
+      });
     });
     describe("/api/comments/:comment_id", () => {
       it("Server responds with status 405 for invalid HTTP methods - GET", () => {
