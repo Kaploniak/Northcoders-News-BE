@@ -53,11 +53,6 @@ describe("app", () => {
           .patch("/api/topics")
           .expect(405);
       });
-      it("Server responds with status 405 for invalid HTTP methods - POST", () => {
-        return request(app)
-          .post("/api/topics")
-          .expect(405);
-      });
       describe("/topics - GET", () => {
         it("1 GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
@@ -82,6 +77,44 @@ describe("app", () => {
             .expect(200)
             .then(({ body }) => {
               expect(body.topics[0]).to.have.keys("slug", "description");
+            });
+        });
+      });
+      describe.only("/topics - POST", () => {
+        it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
+          return request(app)
+            .post("/api/topics")
+            .send({
+              wrong_key: "Not dogs",
+              slug: "cats"
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it("POST / status: 400 and message: Bad request, when empty body passed", () => {
+          return request(app)
+            .post("/api/topics")
+            .send({})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("No data to post!");
+            });
+        });
+        it("POST / status: 201 add new topic", () => {
+          return request(app)
+            .post("/api/topics")
+            .send({
+              description: "Test description...",
+              slug: "Test topic"
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.topic).to.eql({
+                description: "Test description...",
+                slug: "Test topic"
+              });
             });
         });
       });
