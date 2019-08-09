@@ -84,3 +84,18 @@ exports.selectAllArticles = (
       }
     });
 };
+
+exports.createdArticle = article => {
+  console.log(article, "article from model");
+  return connection
+    .insert(article)
+    .into("articles")
+    .returning("*")
+    .then(article => {
+      if (!article || !article.length) {
+        return Promise.reject({ status: 404, msg: "Article not found - test" });
+      } else {
+        return article;
+      }
+    });
+};
