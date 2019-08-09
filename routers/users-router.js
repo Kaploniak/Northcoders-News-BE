@@ -1,7 +1,8 @@
 const usersRouter = require("express").Router();
 const {
   sendUserByUsername,
-  addNewUser
+  addNewUser,
+  sendAllUsers
 } = require("../controllers/users-controller");
 const { methodNotAllowed } = require("../errors");
 
@@ -13,6 +14,7 @@ usersRouter
 usersRouter
   .route("/")
   .post(addNewUser)
+  .get(sendAllUsers)
   .all(methodNotAllowed);
 
 module.exports = usersRouter;
