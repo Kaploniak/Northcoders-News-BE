@@ -35,8 +35,10 @@ exports.updateArticleVotesByArticleId = (article_id, inc_votes) => {
 exports.selectAllArticles = (
   sort_by = "created_at",
   order = "desc",
+  limit = 10,
   author,
-  topic
+  topic,
+  p = 1
 ) => {
   const permittedOrder = ["asc", "desc"];
   const permittedColunms = [
@@ -69,6 +71,8 @@ exports.selectAllArticles = (
     .groupBy("articles.article_id", "comments.article_id")
     .count("comments.article_id AS comment_count")
     .orderBy(sort_by, order)
+    .limit(limit)
+    .offset(limit * (p - 1))
     .modify(queryBuilder => {
       if (author) queryBuilder.where("articles.author", author);
       if (topic) queryBuilder.where("articles.topic", topic);
