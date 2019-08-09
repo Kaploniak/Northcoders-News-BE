@@ -2,7 +2,8 @@ const articlesRouter = require("express").Router();
 const {
   sendArticleById,
   patchArticleVotesByArticleId,
-  sendAllArticles
+  sendAllArticles,
+  addNewArticle
 } = require("../controllers/article-controller");
 const {
   addNewComment,
@@ -25,6 +26,7 @@ articlesRouter
 articlesRouter
   .route("/")
   .get(sendAllArticles)
+  .post(addNewArticle)
   .all(methodNotAllowed);
 
 module.exports = articlesRouter;
