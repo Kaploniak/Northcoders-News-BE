@@ -1,7 +1,8 @@
 const {
   selectArticleByArticleId,
   updateArticleVotesByArticleId,
-  selectAllArticles
+  selectAllArticles,
+  createdArticle
 } = require("../models/article-model");
 const { checkIfExists, totalCount } = require("../controllers/utils");
 
@@ -47,5 +48,14 @@ exports.sendAllArticles = (req, res, next) => {
         }
       }
     )
+    .catch(err => next(err));
+};
+
+exports.addNewArticle = (req, res, next) => {
+  const article = req.body;
+  createdArticle(article)
+    .then(article => {
+      res.status(201).send({ article: article[0] });
+    })
     .catch(err => next(err));
 };
