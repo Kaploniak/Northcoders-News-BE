@@ -1,5 +1,4 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  console.log(err, "<----- from error handler");
   const errCodes400 = {
     "22P02": "Invalid id",
     "23502": "No data to post!",
