@@ -31,3 +31,7 @@ exports.createdUser = user => {
       }
     });
 };
+
+exports.selectUsers = () => {
+  return connection.select("*").from("users");
+};
