@@ -35,7 +35,7 @@ This section details the steps required in order to run the development environm
 After forking this repository, clone its contents to your local system by using the following terminal command:
 
 ```
-$ git clone https://github.com/<your-github-username>/be-nc-news
+$ git clone https://github.com/Kaploniak/nc-news
 ```
 
 Open this repository in your favoured code editor.
