@@ -3,7 +3,7 @@ const {
   updateArticleVotesByArticleId,
   selectAllArticles
 } = require("../models/article-model");
-const { checkIfExists } = require("../controllers/utils");
+const { checkIfExists, totalCount } = require("../controllers/utils");
 
 exports.sendArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -33,16 +33,19 @@ exports.sendAllArticles = (req, res, next) => {
   const checkIfTopicExists = topic
     ? checkIfExists(topic, "topics", "slug")
     : null;
+  const total_count = totalCount("articles", author, topic);
 
-  Promise.all([checkIfAuthorExists, checkIfTopicExists, articles])
-    .then(([checkIfAuthorExists, checkIfTopicExists, articles]) => {
-      if (checkIfAuthorExists === false) {
-        return Promise.reject({ status: 404, message: "Author not found" });
-      } else if (checkIfTopicExists === false) {
-        return Promise.reject({ status: 404, message: "Topic not found" });
-      } else {
-        res.status(200).send({ articles });
+  Promise.all([checkIfAuthorExists, checkIfTopicExists, articles, total_count])
+    .then(
+      ([checkIfAuthorExists, checkIfTopicExists, articles, total_count]) => {
+        if (checkIfAuthorExists === false) {
+          return Promise.reject({ status: 404, message: "Author not found" });
+        } else if (checkIfTopicExists === false) {
+          return Promise.reject({ status: 404, message: "Topic not found" });
+        } else {
+          res.status(200).send({ total_count, articles });
+        }
       }
-    })
+    )
     .catch(err => next(err));
 };
