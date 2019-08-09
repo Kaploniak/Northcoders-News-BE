@@ -86,7 +86,6 @@ exports.selectAllArticles = (
 };
 
 exports.createdArticle = article => {
-  console.log(article, "article from model");
   return connection
     .insert(article)
     .into("articles")
@@ -96,6 +95,24 @@ exports.createdArticle = article => {
         return Promise.reject({ status: 404, msg: "Article not found - test" });
       } else {
         return article;
+      }
+    });
+};
+
+exports.removedArticle = article_id => {
+  return connection
+    .select("*")
+    .from("articles")
+    .where("articles.article_id", "=", article_id)
+    .del()
+    .then(deleted => {
+      if (!deleted) {
+        return Promise.reject({
+          status: 404,
+          message: `Article with Id ${article_id} not found`
+        });
+      } else {
+        return "Deleted";
       }
     });
 };
