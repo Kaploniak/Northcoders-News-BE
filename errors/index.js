@@ -1,8 +1,9 @@
 exports.handlePSQLErrors = (err, req, res, next) => {
-  // console.log(err, "<----- from error handler");
+  console.log(err, "<----- from error handler");
   const errCodes400 = {
     "22P02": "Invalid id",
-    "23502": "No data to post!"
+    "23502": "No data to post!",
+    "42703": "Bad request"
   };
   const errCodes404 = {
     "23503": "Page not found"
