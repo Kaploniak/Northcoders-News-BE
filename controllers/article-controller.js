@@ -25,8 +25,8 @@ exports.patchArticleVotesByArticleId = (req, res, next) => {
 };
 
 exports.sendAllArticles = (req, res, next) => {
-  const { sort_by, order, author, topic } = req.query;
-  const articles = selectAllArticles(sort_by, order, author, topic);
+  const { sort_by, order, limit, author, topic, p } = req.query;
+  const articles = selectAllArticles(sort_by, order, limit, author, topic, p);
   const checkIfAuthorExists = author
     ? checkIfExists(author, "users", "username")
     : null;
