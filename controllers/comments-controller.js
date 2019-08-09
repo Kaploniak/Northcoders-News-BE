@@ -18,7 +18,7 @@ exports.addNewComment = (req, res, next) => {
 
 exports.sendAllCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by, order } = req.query;
+  const { sort_by, order, limit, p } = req.query;
 
   if (!/\d+/gm.test(article_id)) {
     return next({
@@ -28,7 +28,13 @@ exports.sendAllCommentsByArticleId = (req, res, next) => {
   }
 
   const article = selectArticleByArticleId(article_id);
-  const comments = selectAllCommentsByArticleId(article_id, sort_by, order);
+  const comments = selectAllCommentsByArticleId(
+    article_id,
+    sort_by,
+    order,
+    limit,
+    p
+  );
 
   Promise.all([article, comments])
     .then(([article, comments]) => {
