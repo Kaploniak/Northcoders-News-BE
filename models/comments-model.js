@@ -22,7 +22,9 @@ exports.postNewCommentByArticleId = (article_id, username, body) => {
 exports.selectAllCommentsByArticleId = (
   article_id,
   sort_by = "created_at",
-  order = "desc"
+  order = "desc",
+  limit = 10,
+  p = 1
 ) => {
   const permittedColunms = [
     "comment_id",
@@ -44,6 +46,8 @@ exports.selectAllCommentsByArticleId = (
     .select("*")
     .from("comments")
     .where("article_id", article_id)
+    .limit(limit)
+    .offset(limit * (p - 1))
     .orderBy(sort_by, order)
     .then(comments => {
       if (!comments) {
