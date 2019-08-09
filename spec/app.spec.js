@@ -27,6 +27,21 @@ describe("app", () => {
           expect(body).to.be.an("object");
         });
     });
+    it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
+      return request(app)
+        .delete("/api")
+        .expect(405);
+    });
+    it("Server responds with status 405 for invalid HTTP methods - PATCH", () => {
+      return request(app)
+        .patch("/api")
+        .expect(405);
+    });
+    it("Server responds with status 405 for invalid HTTP methods - POST", () => {
+      return request(app)
+        .post("/api")
+        .expect(405);
+    });
     describe("/topics", () => {
       it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
         return request(app)
@@ -617,6 +632,24 @@ describe("app", () => {
             .expect(404)
             .then(({ body }) => {
               expect(body.msg).to.equal("Author not found");
+            });
+        });
+        it("GET / status: 200 and return an object with array of article objects sorted by ascending order, ordered by column created_at and limited to 10 objects by DEFAULT", () => {
+          return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
+              expect(body.articles).to.have.lengthOf(10);
+            });
+        });
+        it.only("GET / status: 200 and return an object with array of article objects sorted by ascending order, ordered by column created_at and limited to 10 objects by DEFAULT - second page", () => {
+          return request(app)
+            .get("/api/articles?p=2")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.articles).to.be.descendingBy("created_at");
+              expect(body.articles).to.have.lengthOf(2);
             });
         });
       });
