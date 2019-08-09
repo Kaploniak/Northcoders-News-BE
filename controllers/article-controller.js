@@ -2,7 +2,8 @@ const {
   selectArticleByArticleId,
   updateArticleVotesByArticleId,
   selectAllArticles,
-  createdArticle
+  createdArticle,
+  removedArticle
 } = require("../models/article-model");
 const { checkIfExists, totalCount } = require("../controllers/utils");
 
@@ -56,6 +57,15 @@ exports.addNewArticle = (req, res, next) => {
   createdArticle(article)
     .then(article => {
       res.status(201).send({ article: article[0] });
+    })
+    .catch(err => next(err));
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  removedArticle(article_id)
+    .then(article => {
+      res.status(204).send({ msg: "Article removed" });
     })
     .catch(err => next(err));
 };
