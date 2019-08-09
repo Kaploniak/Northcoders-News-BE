@@ -933,7 +933,7 @@ describe("app", () => {
       });
     });
     describe("/api/users", () => {
-      describe.only("/api/users - POST", () => {
+      describe("/api/users - POST", () => {
         it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
           return request(app)
             .post("/api/users")
@@ -971,6 +971,25 @@ describe("app", () => {
                 name: "test",
                 avatar_url: "https://test"
               });
+            });
+        });
+      });
+      describe.only("/api/users - GET", () => {
+        it("1 GET / status: 404 and respond with message: Page not found, when wrong path", () => {
+          return request(app)
+            .get("/api/not-a-route")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).to.equal("Page not found");
+            });
+        });
+        it("2 GET / status: 200 and return an array with topic objects", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users).to.be.an("array");
+              expect(body.users[0]).to.be.an("object");
             });
         });
       });
