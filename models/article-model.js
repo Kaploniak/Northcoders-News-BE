@@ -50,12 +50,8 @@ exports.selectAllArticles = (
     "created_at",
     "comment_count"
   ];
-  if (!permittedColunms.includes(sort_by)) {
-    sort_by = "created_at";
-  }
-  if (!permittedOrder.includes(order)) {
-    order = "desc";
-  }
+  if (!permittedColunms.includes(sort_by)) sort_by = "created_at";
+  if (!permittedOrder.includes(order)) order = "desc";
 
   return connection
     .select(
