@@ -42,7 +42,7 @@ describe("app", () => {
         .post("/api")
         .expect(405);
     });
-    describe("/topics", () => {
+    describe("/api/topics", () => {
       it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
         return request(app)
           .delete("/api/topics")
@@ -80,7 +80,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/topics - POST", () => {
+      describe("/topics - POST", () => {
         it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
           return request(app)
             .post("/api/topics")
@@ -119,7 +119,7 @@ describe("app", () => {
         });
       });
     });
-    describe("/users/:username", () => {
+    describe("/api/users/:username", () => {
       it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
         return request(app)
           .delete("/api/users/butter_bridge")
@@ -187,7 +187,7 @@ describe("app", () => {
         });
       });
     });
-    describe("/articles/:article_id", () => {
+    describe("/api/articles/:article_id", () => {
       it("Server responds with status 405 for invalid HTTP methods - POST", () => {
         return request(app)
           .post("/api/articles/1")
@@ -350,7 +350,7 @@ describe("app", () => {
         });
       });
     });
-    describe("/articles/:article_id/comments", () => {
+    describe("/api/articles/:article_id/comments", () => {
       it("Server responds with status 405 for invalid HTTP methods - DELETE", () => {
         return request(app)
           .delete("/api/articles/1/comments")
@@ -929,6 +929,49 @@ describe("app", () => {
           return request(app)
             .delete("/api/comments/1")
             .expect(204);
+        });
+      });
+    });
+    describe("/api/users", () => {
+      describe.only("/api/users - POST", () => {
+        it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
+          return request(app)
+            .post("/api/users")
+            .send({
+              wrong_key: "test user",
+              name: "test",
+              avatar_url: "https://test"
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it("POST / status: 400 and message: Bad request, when empty body passed", () => {
+          return request(app)
+            .post("/api/users")
+            .send({})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("No data to post!");
+            });
+        });
+        it("POST / status: 201 add new topic", () => {
+          return request(app)
+            .post("/api/users")
+            .send({
+              username: "test user",
+              name: "test",
+              avatar_url: "https://test"
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.user).to.eql({
+                username: "test user",
+                name: "test",
+                avatar_url: "https://test"
+              });
+            });
         });
       });
     });
