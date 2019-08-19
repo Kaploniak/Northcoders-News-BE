@@ -3,8 +3,10 @@ const apiRouter = require("./routers/api-router");
 const { handlePSQLErrors, handleCustomErrors, handle500 } = require("./errors");
 
 const app = express();
+const cors = require("cors");
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/api", apiRouter);
 
