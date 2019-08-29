@@ -1,7 +1,7 @@
 const connection = require("../db/connection");
 
 exports.selectUserByUsername = username => {
-  if (/^[a-z_-]+$/i.test(username)) {
+  if (/(?!^\d+$)^.+$/gm.test(username)) {
     return connection
       .select("*")
       .from("users")
