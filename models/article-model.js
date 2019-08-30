@@ -56,6 +56,7 @@ exports.selectAllArticles = (
   return connection
     .select(
       "articles.article_id",
+      "articles.body",
       "articles.title",
       "articles.votes",
       "articles.author",
