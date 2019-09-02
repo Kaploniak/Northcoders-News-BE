@@ -945,7 +945,7 @@ describe("app", () => {
       });
     });
     describe("/api/users", () => {
-      describe("/api/users - POST", () => {
+      describe.only("/api/users - POST", () => {
         it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
           return request(app)
             .post("/api/users")
@@ -965,7 +965,21 @@ describe("app", () => {
             .send({})
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.eql("No data to post!");
+              expect(body.msg).to.eql("Bad request");
+            });
+        });
+        it("POST / status: 422 and message: User already exist", () => {
+          return request(app)
+            .post("/api/users")
+            .send({
+              username: "icellusedkars",
+              name: "sam",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+            })
+            .expect(422)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("User already exist");
             });
         });
         it("POST / status: 201 add new topic", () => {

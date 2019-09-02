@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { checkIfExists } = require("../controllers/utils");
 
 exports.selectUserByUsername = username => {
   if (/(?!^\d+$)^.+$/gm.test(username)) {
@@ -19,17 +20,30 @@ exports.selectUserByUsername = username => {
 };
 
 exports.createdUser = user => {
-  return connection
-    .insert(user)
-    .into("users")
-    .returning("*")
-    .then(user => {
-      if (!user || !user.length) {
-        return Promise.reject({ status: 404, msg: "User not found - test" });
-      } else {
-        return user;
-      }
+  if (!user || !user.username) {
+    return Promise.reject({
+      status: 400,
+      message: "Bad request"
     });
+  } else {
+    return checkIfExists(user.username, "users", "username")
+      .then(response => {
+        if (!response) {
+          return connection
+            .insert(user)
+            .into("users")
+            .returning("*");
+        } else {
+          return Promise.reject({
+            status: 422,
+            message: "User already exist"
+          });
+        }
+      })
+      .then(user => {
+        return user;
+      });
+  }
 };
 
 exports.selectUsers = () => {
