@@ -86,7 +86,7 @@ exports.removedComment = comment_id => {
           message: `Comment with Id ${comment_id} not found`
         });
       } else {
-        return "Deleted";
+        return deleted;
       }
     });
 };
