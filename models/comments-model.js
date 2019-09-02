@@ -78,9 +78,10 @@ exports.removedComment = comment_id => {
     .select("*")
     .from("comments")
     .where("comments.comment_id", "=", comment_id)
+    .returning("*")
     .del()
     .then(deleted => {
-      if (!deleted) {
+      if (deleted.length === 0) {
         return Promise.reject({
           status: 404,
           message: `Comment with Id ${comment_id} not found`

@@ -916,7 +916,7 @@ describe("app", () => {
             });
         });
       });
-      describe("/api/comments/:comment_id - DELETE", () => {
+      describe.only("/api/comments/:comment_id - DELETE", () => {
         it("1 DELETE / status 404 and respond with an error message: Comment with Id 50 not found, if a comment_id does not exist", () => {
           return request(app)
             .delete("/api/comments/50")
