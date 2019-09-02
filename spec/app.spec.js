@@ -86,7 +86,7 @@ describe("app", () => {
             .post("/api/topics")
             .send({
               wrong_key: "Not dogs",
-              slug: "cats"
+              slug: "cat"
             })
             .expect(400)
             .then(({ body }) => {
@@ -99,7 +99,19 @@ describe("app", () => {
             .send({})
             .expect(400)
             .then(({ body }) => {
-              expect(body.msg).to.eql("No data to post!");
+              expect(body.msg).to.eql("Bad request, when empty body passed");
+            });
+        });
+        it("POST / status: 422 and message:Topic already exist", () => {
+          return request(app)
+            .post("/api/topics")
+            .send({
+              description: "Not dogs",
+              slug: "cats"
+            })
+            .expect(422)
+            .then(({ body }) => {
+              expect(body.msg).to.eql("Topic already exist");
             });
         });
         it("POST / status: 201 add new topic", () => {
@@ -916,7 +928,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/api/comments/:comment_id - DELETE", () => {
+      describe("/api/comments/:comment_id - DELETE", () => {
         it("1 DELETE / status 404 and respond with an error message: Comment with Id 50 not found, if a comment_id does not exist", () => {
           return request(app)
             .delete("/api/comments/50")
@@ -974,7 +986,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/api/users - GET", () => {
+      describe("/api/users - GET", () => {
         it("1 GET / status: 404 and respond with message: Page not found, when wrong path", () => {
           return request(app)
             .get("/api/not-a-route")
