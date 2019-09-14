@@ -945,7 +945,7 @@ describe("app", () => {
       });
     });
     describe("/api/users", () => {
-      describe.only("/api/users - POST", () => {
+      describe("/api/users - POST", () => {
         it("POST / status: 400 and message: Bad request, when wrong key passed", () => {
           return request(app)
             .post("/api/users")
